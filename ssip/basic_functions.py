@@ -371,17 +371,21 @@ def num_logical_qubits(C: CSScode) -> int:
 # then performing Gaussian elimination to calculate the linearly independent
 # vectors in ker(B) under the equivalence /imA.
 def find_homology_basis(A: BinMatrix, B: BinMatrix) -> list[list[int]]:
-    im_basis = np.array(image_basis_calc(A))
-    im_dim = im_basis.shape[0]
-    quotient_map = np.array(kernel_basis_calc(im_basis))
+    im_vectors = image_basis_calc(A)
+    im_dim = len(im_vectors)
+    im_basis = np.array(im_vectors).reshape(im_dim, A.shape[0])
 
-    ker_basis = np.array(kernel_basis_calc(B)).T
-    ker_dim = ker_basis.shape[1]
+    ker_vectors = kernel_basis_calc(B)
+    ker_dim = len(ker_vectors)
+    ker_basis = np.array(ker_vectors).reshape(ker_dim, B.shape[1]).T
 
     hom_dim = ker_dim - im_dim
     if hom_dim < 0:
         raise ValueError("Kernel is smaller than image")
+    if hom_dim == 0:
+        return []
 
+    quotient_map = np.array(kernel_basis_calc(im_basis))
     quotiented_vecs = multiply_F2(quotient_map, ker_basis)
     height = quotiented_vecs.shape[0]
     mat = column_echelon_form(quotiented_vecs, True)
