@@ -58,6 +58,7 @@ def is_irreducible_logical(indices: Iterable[int], B: BinMatrix) -> bool:
         True if v is in ker(B) and there is no subvector of v which
         is also in ker(B). False otherwise.
     """
+    indices = list(indices)
     vec = np.array([indices_to_vector(indices, B.shape[1])]).T
     if not compose_to_zero(B, vec):
         return False
